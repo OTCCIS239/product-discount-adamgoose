@@ -1,8 +1,37 @@
 <?php
 
-$description = $_GET['description'];
-$price = $_GET['price'];
-$discount = $_GET['discount'];
+require_once('./db.php');
+
+$productId = $_GET['product_id'];
+$couponId = $_GET['coupon_id'];
+
+// $query = "SELECT * FROM products WHERE id = :product_id";
+// $statement = $conn->prepare($query);
+// $statement->bindValue(':product_id', $productId);
+// $statement->execute();
+// $product = $statement->fetch();
+// $statement->closeCursor();
+
+// $query = "SELECT * FROM coupons WHERE id = :coupon_id";
+// $statement = $conn->prepare($query);
+// $statement->bindValue(':coupon_id', $couponId);
+// $statement->execute();
+// $coupon = $statement->fetch();
+// $statement->closeCursor();
+
+$product = getOne("SELECT * FROM products WHERE id = :product_id", [
+    ':product_id' => $productId
+], $conn);
+$coupon = getOne("SELECT * FROM coupons WHERE id = :coupon_id", [
+    ':coupon_id' => $couponId
+], $conn);
+
+// // var_dump($product);
+// die();
+
+$description = $product['description'];
+$price = $product['price'];
+$discount = $coupon['discount_percent'];
 
 $discountAmount = $price * ($discount / 100);
 $total = $price - $discountAmount;
@@ -37,6 +66,9 @@ $total = $price - $discountAmount;
 
                         <dt class="col-6">List Price</dt>
                         <dd class="col-6">$<?= $price ?></dd>
+
+                        <dt class="col-6">Coupon</dt>
+                        <dd class="col-6"><?= $coupon['code'] ?> - <?= $coupon['description'] ?></dd>
 
                         <dt class="col-6">Discount</dt>
                         <dd class="col-6"><?= $discount ?>%</dd>
